@@ -1,9 +1,8 @@
 ﻿using Extensions;
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 
 namespace unicon {
@@ -11,7 +10,7 @@ namespace unicon {
 
         readonly FileInfo[] fileInfos;
         readonly ProcessStartInfo[] psis;
-        string OutputFileExtension { get; } = ".rar";
+        string OutputFileExtension { get; } = ".zip";
 
         public MangaConverter(string path) {
             //scan
@@ -23,19 +22,6 @@ namespace unicon {
             if (!fileInfos.Any()) return;
             if (fileInfos.Any(fi => !fi.Extension.Equals(OutputFileExtension, StringComparison.OrdinalIgnoreCase) && fi.Directory.EnumerateFiles(fi.Name + ".*").Any(file => file.Extension.Equals(OutputFileExtension, StringComparison.OrdinalIgnoreCase)))) throw new IOException("outputFile already exsists!");
             Console.WriteLine();
-
-            static void ExcuteBatch(string batName, string input) {
-                var fileName = Path.Combine("batch", $"{batName}.bat");
-                var arguments = $@"""{input}""";
-                ProcessStartInfo psi = new ProcessStartInfo(fileName, arguments) {
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                };
-
-                using Process p = Process.Start(psi);
-                p.WaitForExit();
-                if (p.ExitCode != 0) throw new Exception($"ExitCode NEQ 0");
-            }
 
             long deltaSum = 0;
             for (int i = 0; i < fileInfos.Length; i++) {
@@ -67,7 +53,8 @@ namespace unicon {
 
                 //repack
                 Console.WriteLine("step 3 : compress");
-                ExcuteBatch("repack", tmpDir);
+                ZipFile.CreateFromDirectory(tmpDir, tmpFile);
+                Directory.Delete(tmpDir,true);
 
                 //replace
                 Console.WriteLine("step 4 : replace");

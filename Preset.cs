@@ -45,7 +45,7 @@ namespace unicon {
     }
 
     class ArchivePreset : Preset {
-        public override string OutputFileExtention => ".rar";
+        public override string OutputFileExtention => ".zip";
         public override string BatchName => "unpack";
         public override string SearchPattern => ".zip|.rar|.7z";
     }
