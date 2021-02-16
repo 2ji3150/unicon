@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="batch\**" CopyToOutputDirectory="PreserveNewest"/> 
+    <Content Include="batch\**" CopyToOutputDirectory="PreserveNewest" /> 
   </ItemGroup>
   
 </Project>
