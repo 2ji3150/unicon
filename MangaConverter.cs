@@ -9,19 +9,16 @@ namespace unicon {
     class MangaConverter : IConverter {
 
         readonly FileInfo[] fileInfos;
-        readonly ProcessStartInfo[] psis;
+
         string OutputFileExtension { get; } = ".zip";
 
         public MangaConverter(string path) {
             //scan
             DirectoryInfo di = new DirectoryInfo(path);
             fileInfos = di.EnumerateFiles("*.*", SearchOption.AllDirectories).ToArray();
-            psis = new ArchivePreset().GetProcess(fileInfos).ToArray();
         }
         public void Convert() {
             if (!fileInfos.Any()) return;
-            if (fileInfos.Any(fi => !fi.Extension.Equals(OutputFileExtension, StringComparison.OrdinalIgnoreCase) && fi.Directory.EnumerateFiles(fi.Name + ".*").Any(file => file.Extension.Equals(OutputFileExtension, StringComparison.OrdinalIgnoreCase)))) throw new IOException("outputFile already exsists!");
-            Console.WriteLine();
 
             long deltaSum = 0;
             for (int i = 0; i < fileInfos.Length; i++) {
@@ -33,15 +30,13 @@ namespace unicon {
                 #region extract
                 string inFile = fileInfos[i].FullName;
                 string outFile = Path.ChangeExtension(inFile, OutputFileExtension);
-                string tmpDir = Path.ChangeExtension(inFile, null) + "$TMP";
+                string tmpDir = "$TMP";
                 string tmpFile = Path.ChangeExtension(tmpDir, OutputFileExtension);
 
                 if (Directory.Exists(tmpDir)) throw new IOException($"{tmpDir} exsists");
                 if (File.Exists(tmpFile)) throw new IOException($"{tmpFile} exsists");
 
-                using Process p = Process.Start(psis[i]);
-                p.WaitForExit();
-                if (p.ExitCode != 0) throw new Exception($"ExitCode NEQ 0");
+                ZipFile.ExtractToDirectory(inFile, tmpDir);
 
                 #endregion
 
@@ -54,10 +49,10 @@ namespace unicon {
                 //repack
                 Console.WriteLine("step 3 : compress");
                 ZipFile.CreateFromDirectory(tmpDir, tmpFile);
-                Directory.Delete(tmpDir,true);
+                Directory.Delete(tmpDir, true);
 
                 //replace
-                Console.WriteLine("step 4 : replace");
+                Console.WriteLine("step 4 : replace"); 
                 FileInfo fi = new FileInfo(inFile);
                 FileInfo fi_out = new FileInfo(tmpFile);
 

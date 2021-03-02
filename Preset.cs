@@ -43,10 +43,4 @@ namespace unicon {
         public override string BatchName => "cwebp";
         public override string SearchPattern => ".bmp|.png|.tif|.tiff|.webp";
     }
-
-    class ArchivePreset : Preset {
-        public override string OutputFileExtention => ".zip";
-        public override string BatchName => "unpack";
-        public override string SearchPattern => ".zip|.rar|.7z";
-    }
 }
