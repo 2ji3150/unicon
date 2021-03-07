@@ -13,7 +13,7 @@ namespace unicon {
 
         public MangaConverter(string path) {
             //scan
-            DirectoryInfo di = new DirectoryInfo(path);
+            DirectoryInfo di = new(path);
             fileInfos = di.EnumerateFiles("*.*", SearchOption.AllDirectories).ToArray();
         }
         public void Convert() {
@@ -26,7 +26,7 @@ namespace unicon {
 
                 Console.WriteLine("step 1 : extract");
 
-               
+
                 string inFile = fileInfos[i].FullName;
                 string outFile = Path.ChangeExtension(inFile, OutputFileExtension);
                 string tmpDir = "$TMP";
@@ -37,7 +37,7 @@ namespace unicon {
 
                 ZipFile.ExtractToDirectory(inFile, tmpDir);
 
-           
+
 
                 Console.WriteLine("step 2 : optimize");
 
@@ -52,8 +52,8 @@ namespace unicon {
 
                 //replace
                 Console.WriteLine("step 4 : replace");
-                FileInfo fi = new FileInfo(inFile);
-                FileInfo fi_out = new FileInfo(tmpFile);
+                FileInfo fi = new(inFile);
+                FileInfo fi_out = new(tmpFile);
 
                 long old_size = fi.Length;
                 long new_size = fi_out.Length;
