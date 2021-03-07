@@ -11,7 +11,7 @@ namespace unicon {
 
         public GeneralFileConverter(Preset[] presets, string path) {
             //scan
-            DirectoryInfo di = new DirectoryInfo(path);
+            DirectoryInfo di = new(path);
             var fileInfos = di.EnumerateFiles("*.*", SearchOption.AllDirectories).ToArray();
             psis = presets.SelectMany(preset => preset.GetProcess(fileInfos)).ToArray();
         }
@@ -24,7 +24,7 @@ namespace unicon {
             var flattenBlock = new TransformManyBlock<ProcessStartInfo[], ProcessStartInfo>(psi => psi);
             var processBlock = new TransformBlock<ProcessStartInfo, bool>(async psi => {
                 var tcs = new TaskCompletionSource<bool>();
-                using Process p = new Process { StartInfo = psi, EnableRaisingEvents = true };
+                using Process p = new() { StartInfo = psi, EnableRaisingEvents = true };
                 p.Exited += (s, a) => {
                     if (p.ExitCode == 0) tcs.SetResult(true);
                     else tcs.SetException(new Exception($"ExitCode NEQ 0"));

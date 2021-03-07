@@ -1,6 +1,5 @@
 ﻿using Extensions;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -27,7 +26,7 @@ namespace unicon {
 
                 Console.WriteLine("step 1 : extract");
 
-                #region extract
+               
                 string inFile = fileInfos[i].FullName;
                 string outFile = Path.ChangeExtension(inFile, OutputFileExtension);
                 string tmpDir = "$TMP";
@@ -38,7 +37,7 @@ namespace unicon {
 
                 ZipFile.ExtractToDirectory(inFile, tmpDir);
 
-                #endregion
+           
 
                 Console.WriteLine("step 2 : optimize");
 
@@ -52,7 +51,7 @@ namespace unicon {
                 Directory.Delete(tmpDir, true);
 
                 //replace
-                Console.WriteLine("step 4 : replace"); 
+                Console.WriteLine("step 4 : replace");
                 FileInfo fi = new FileInfo(inFile);
                 FileInfo fi_out = new FileInfo(tmpFile);
 

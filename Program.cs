@@ -12,11 +12,10 @@ namespace unicon {
             foreach (Mode m in (Mode[])Enum.GetValues(typeof(Mode))) Console.WriteLine($"{(int)m}.{m}");
             Console.Write("Choose the mode number:");
             if (!int.TryParse(Console.ReadKey().KeyChar.ToString(), out int num)) return;
-            Stopwatch sw = new Stopwatch();
+            Stopwatch sw = new();
             sw.Start();
             IConverter SimpleFactory(int num) {
-                return ((Mode)num) switch
-                {
+                return ((Mode)num) switch {
                     Mode.cwebp => new GeneralFileConverter(new Preset[] { new CwebpPreset() }, path),
                     Mode.mozjpeg => new GeneralFileConverter(new Preset[] { new MozjpegPreset() }, path),
                     Mode.manga => new MangaConverter(path),
