@@ -22,19 +22,20 @@ namespace unicon {
             Console.WriteLine($"\n\n{psis.Length} files detected\n");
 
             var flattenBlock = new TransformManyBlock<ProcessStartInfo[], ProcessStartInfo>(psi => psi);
+            
             var processBlock = new TransformBlock<ProcessStartInfo, bool>(async psi => {
-                var tcs = new TaskCompletionSource<bool>();
-                using Process p = new() { StartInfo = psi, EnableRaisingEvents = true };
-                p.Exited += (s, a) => {
-                    if (p.ExitCode == 0) tcs.SetResult(true);
-                    else tcs.SetException(new Exception($"ExitCode NEQ 0"));
-                };
-                p.Start();
-                return await tcs.Task;
+                using Process p = Process.Start(psi);
+                await p.WaitForExitAsync();
+                return p.ExitCode == 0;
             }, new ExecutionDataflowBlockOptions() { MaxDegreeOfParallelism = 3 });
-            var progressBlock = new ActionBlock<bool>(success => Console.Write($"\r{++counter}/{psis.Length}"));
-
+            
+            var progressBlock = new ActionBlock<bool>(success => {
+                if (!success) throw new Exception("ExitCode NEQ 0");
+                Console.Write($"\r{++counter}/{psis.Length}");
+            });
+            
             var dataflowLinkOptions = new DataflowLinkOptions() { PropagateCompletion = true };
+            
             flattenBlock.LinkTo(processBlock, dataflowLinkOptions);
             processBlock.LinkTo(progressBlock, dataflowLinkOptions);
 
